@@ -28,6 +28,9 @@ function score = tensorCCA(tensorA,tensorB)
      [x1 y1 r1]=canoncorr(double(Ax),double(Bx));
      [x2 y2 r2]=canoncorr(double(Ay),double(By)); 
      [x3 y3 r3]=canoncorr(double(Az),double(Bz));  
-     corrs=[r1(1:10),r2(1:10),r3(1:10)];
+     corrs=[r1,r2,r3];
+
+     %use top correlations
+%     corrs=[r1(1:10),r2(1:10),r3(1:10)];
     
     score=sort(corrs,'descend');

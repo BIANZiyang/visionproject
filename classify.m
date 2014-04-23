@@ -6,8 +6,10 @@ addpath('opticalflow');
 addpath('lscca/utilities');
 
 %use depth and video tensors
-depth=0;
+depth=1;
 useVideo=1;
+
+% to choose how many top correlations to use, change tensorCCA.m
 
 %how many nearest neighbors for classification
 nn=10;
@@ -72,14 +74,14 @@ for j=1:numTest
             corrsR=tensorCCA(redQuery,redTarget);
             corrsG=tensorCCA(greenQuery,greenTarget);
             corrsB=tensorCCA(blueQuery,blueTarget);
-            finalScore=sum([sum(corrsR(1:10)),sum(corrsG(1:10)),sum(corrsB(1:10))]);
+            finalScore=sum([sum(corrsR),sum(corrsG),sum(corrsB)]);
         else
             finalScore=0;
         end
         if depth
             depthTarget=loadDepth(library{i});
             corrsD=tensorCCA(depthQuery,depthTarget);
-            finalScore=sum([finalScore,sum(corrsD(1:10))]);
+            finalScore=sum([finalScore,sum(corrsD)]);
         end
 
         scores(i)=finalScore;
