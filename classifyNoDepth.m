@@ -4,12 +4,13 @@ addpath('tensor_toolbox/');
 addpath('opticalflow/mex');
 addpath('opticalflow');
 addpath('lscca/utilities');
-addpath('SCCA-master/src');
+
 %use depth and video tensors
 depth=1;
 useVideo=1;
+eps=0.01;
 
-sparse=0;
+
 % to choose how many top correlations to use, change tensorCCA.m
 
 %how many nearest neighbors for classification
@@ -24,7 +25,7 @@ savefile='depth';
 
 opticalFlow=1;  %compute optical flow on video
 numImages=length(library);
-numTest=length(test);
+numTest=length(test)
 class=zeros(numImages,1);
 classTest=zeros(numTest,1);
 prediction=zeros(numTest,1);
@@ -56,6 +57,10 @@ for j=1:numTest
     end
     if depth
         depthQuery=loadDepth(library{j});
+        [r c t]=size(depthQuery);
+        for tt=1:t
+             depthQuery(:,:,tt) =depthQuery(:,:,tt)+eps.*eye(size(depthQuery(:,:,tt)));          
+        end
     end
     
     %compare target sequence to all sequences in the library
@@ -72,16 +77,21 @@ for j=1:numTest
             greenTarget=squeeze(vidFrames(:,:,2,:));
             blueTarget=squeeze(vidFrames(:,:,3,:));
 
-            corrsR=tensorSCCA(redQuery,redTarget,sparse);
-            corrsG=tensorSCCA(greenQuery,greenTarget,sparse);
-            corrsB=tensorSCCA(blueQuery,blueTarget,sparse);
+            corrsR=tensorCCA(redQuery,redTarget);
+            corrsG=tensorCCA(greenQuery,greenTarget);
+            corrsB=tensorCCA(blueQuery,blueTarget);
             finalScore=sum([sum(corrsR),sum(corrsG),sum(corrsB)]);
         else
             finalScore=0;
         end
         if depth
+            
             depthTarget=loadDepth(library{i});
-            corrsD=tensorSCCA(depthQuery,depthTarget,sparse);
+            [r c t]=size(depthQuery);
+            for tt=1:t
+                 depthTarget(:,:,tt) =depthTarget(:,:,tt)+eps.*eye(size(depthTarget(:,:,tt)));          
+            end
+            corrsD=tensorCCA(depthQuery,depthTarget);
             finalScore=sum([finalScore,sum(corrsD)]);
         end
 

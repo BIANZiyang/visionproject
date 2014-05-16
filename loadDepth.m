@@ -26,18 +26,18 @@ else
     end
     fclose(fid);
     
-    width=60;%vid.width;
-    height=60;%vid.height;
+    width=60;%cols;
+    height=60; %rows;
     newFrames=60;
     img=zeros(height,width,newFrames);
     ChannelImg=zeros(height,width,frames);
     for i=1:frames
         threechannels=video(:,:,i);
-        ChannelImg(:,:,i)=imresize(threechannels(:,:),[60,60],'nearest');
+        ChannelImg(:,:,i)=imresize(threechannels(:,:),[height,width],'nearest');
     end
-    newTensor=zeros(60,60,60);
-    for i=1:60
-        newTensor(i,:,:)=imresize(squeeze(ChannelImg(i,:,:)),[60 60],'nearest') ;
+    newTensor=zeros(height,width,newFrames);
+    for i=1:height
+        newTensor(i,:,:)=imresize(squeeze(ChannelImg(i,:,:)),[width newFrames],'nearest') ;
     end
     img=newTensor;
     save(matfile,'img');
